@@ -2,72 +2,99 @@
 #![no_main]
 
 use panic_halt as _;
-use arduino_hal::simple_pwm::*;
 
 #[arduino_hal::entry]
 fn main() -> ! {
     let dp = arduino_hal::Peripherals::take().unwrap();
     let pins = arduino_hal::pins!(dp);
 
-    // Black line follower
-    let ir1 = pins.a1;
-    let ir2 = pins.a2;
+    let mut motor_latch = pins.d12.into_output();
+    let mut motor_enable = pins.d7.into_output();
+    let mut motor_data = pins.d8.into_output();
+    let mut motor_clk = pins.d4.into_output();
 
-    let timer0 = Timer0Pwm::new(dp.TC0, Prescaler::Prescale64);
+    let mut latch_state = 0;
 
-    // Motor one
-    let mut en_a = pins.d5.into_output().into_pwm(&timer0);
-    let mut motor_aip1 = pins.d2.into_output();
-    let mut motor_aip2  = pins.d3.into_output();
+    // reset begin
+    // Това ще е добре да го изнесем в reset функция
+    motor_latch.set_low();
+    motor_data.set_low();
 
-    // Motor two
-    let mut en_b = pins.d6.into_output().into_pwm(&timer0);
-    let mut motor_bip1 = pins.d1.into_output();
-    let mut motor_bip2 = pins.d4.into_output();
+    for n in 0..=7 {
+        motor_clk.set_low();
+
+        // TODO: Това сто про не е правилно 🤔
+        if latch_state & 1 << (7 - n) > 0 {
+            motor_data.set_high();
+        } else {
+            motor_data.set_low();
+        }
+
+        motor_clk.set_high();
+    }
+
+    motor_latch.set_high();
+    motor_enable.set_low();
+    // reset end
 
     loop {
-        if ir1.is_high() && ir2.is_high()  {
-            // IR will not glow on black line
-            motor_aip1.set_low();
-            motor_aip2.set_low();
-            motor_bip1.set_low();
-            motor_aip2.set_low();
-            en_a.set_duty(0);
-            en_b.set_duty(0);
-        } else if ir1.is_low() && ir2.is_low() {
-            // IR not on black line
-            motor_aip1.set_high();
-            motor_aip2.set_low();
-            motor_bip1.set_high();
-            motor_bip2.set_low();
-            en_a.set_duty(200);
-            en_b.set_duty(200);
-            arduino_hal::delay_ms(100);
-        } else if ir1.is_low() && ir2.is_high() {
-            // IR not on black line
-            motor_aip1.set_high();
-            motor_aip2.set_low();
-            motor_bip1.set_low();
-            motor_bip2.set_high();
-            en_a.set_duty(200);
-            en_b.set_duty(150);
-            arduino_hal::delay_ms(100);
-        } else if ir1.is_high() && ir2.is_low() {
-            //Tilt robot towards left by stopping the left wheel and moving the right one
-            motor_aip1.set_low();
-            motor_aip2.set_high();
-            motor_bip1.set_high();
-            motor_aip2.set_low();
-            en_a.set_duty(150);
-            en_b.set_duty(200);
-            arduino_hal::delay_ms(100);
-        } else {
-            motor_aip1.set_low();
-            motor_aip2.set_low();
-            motor_bip1.set_low();
-            motor_bip2.set_low();
-            en_a.set_duty(0);
-            en_b.set_duty(0);
+        // Forward motor 1
+        latch_state |= 1 << 2;
+        latch_state &= !(1 << 3);
+
+        // reset begin
+        // Това задължително трябва да го изнесем в reset функция
+        motor_latch.set_low();
+        motor_data.set_low();
+
+        for n in 0..=7 {
+            motor_clk.set_low();
+
+            // TODO: Това сто про не е правилно 🤔
+            if latch_state & 1 << (7 - n) > 0 {
+                motor_data.set_high();
+            } else {
+                motor_data.set_low();
+            }
+
+            motor_clk.set_high();
         }
+
+        motor_latch.set_high();
+        motor_enable.set_low();
+        // reset end
+
+        // Forward motor 2
+        latch_state |= 1 << 1;
+        latch_state &= !(1 << 4);
+
+        // reset begin
+        // Това задължително трябва да го изнесем в reset функция
+        motor_latch.set_low();
+        motor_data.set_low();
+
+        for n in 0..=7 {
+            motor_clk.set_low();
+
+            // TODO: Това сто про не е правилно 🤔
+            if latch_state & 1 << (7 - n) > 0 {
+                motor_data.set_high();
+            } else {
+                motor_data.set_low();
+            }
+
+            motor_clk.set_high();
+        }
+
+        motor_latch.set_high();
+        motor_enable.set_low();
+        // reset end
+
+        arduino_hal::delay_ms(5000);
+
+        // Backward motor 1
+        // Backward motor 2
+        // Release motor 1
+        // Release motor 2
     }
 }
