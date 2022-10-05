@@ -59,7 +59,7 @@ void latch_tx(void) {
     digitalWrite(MOTORCLK, LOW);
 
     if (latch_state & _BV(7-i)) {
-      //SER_PORT |= _BV(SER);
+      //SER_PORT |= _BV(SER);tg
       digitalWrite(MOTORDATA, HIGH);
     } else {
       //SER_PORT &= ~_BV(SER);

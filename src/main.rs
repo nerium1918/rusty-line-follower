@@ -93,8 +93,113 @@ fn main() -> ! {
         arduino_hal::delay_ms(5000);
 
         // Backward motor 1
+        latch_state &= !(1 << 1);
+        latch_state |= 1 << 2;
+
+        // reset begin
+        // Това задължително трябва да го изнесем в reset функция
+        motor_latch.set_low();
+        motor_data.set_low();
+
+        for n in 0..=7 {
+            motor_clk.set_low();
+
+            // TODO: Това сто про не е правилно 🤔
+            if latch_state & 1 << (7 - n) > 0 {
+                motor_data.set_high();
+            } else {
+                motor_data.set_low();
+            }
+
+            motor_clk.set_high();
+        }
+
+        motor_latch.set_high();
+        motor_enable.set_low();
+        // reset end
+
         // Backward motor 2
+        latch_state &= !(1 << 2);
+        latch_state |= 1 << 2;
+
+        // reset begin
+        // Това задължително трябва да го изнесем в reset функция
+        motor_latch.set_low();
+        motor_data.set_low();
+
+        for n in 0..=7 {
+            motor_clk.set_low();
+
+            // TODO: Това сто про не е правилно 🤔
+            if latch_state & 1 << (7 - n) > 0 {
+                motor_data.set_high();
+            } else {
+                motor_data.set_low();
+            }
+
+            motor_clk.set_high();
+        }
+
+        motor_latch.set_high();
+        motor_enable.set_low();
+        // reset end
+
+        arduino_hal::delay_ms(5000);
+
         // Release motor 1
+        latch_state &= !(1 << 4);
+        latch_state &= !(1 << 1);
+
+
+                // reset begin
+        // Това задължително трябва да го изнесем в reset функция
+        motor_latch.set_low();
+        motor_data.set_low();
+
+        for n in 0..=7 {
+            motor_clk.set_low();
+
+            // TODO: Това сто про не е правилно 🤔
+            if latch_state & 1 << (7 - n) > 0 {
+                motor_data.set_high();
+            } else {
+                motor_data.set_low();
+            }
+
+            motor_clk.set_high();
+        }
+
+        motor_latch.set_high();
+        motor_enable.set_low();
+        // reset end
+
         // Release motor 2
+        latch_state &= !(1 << 4);
+        latch_state &= !(1 << 2);
+
+
+                // reset begin
+        // Това задължително трябва да го изнесем в reset функция
+        motor_latch.set_low();
+        motor_data.set_low();
+
+        for n in 0..=7 {
+            motor_clk.set_low();
+
+            // TODO: Това сто про не е правилно 🤔
+            if latch_state & 1 << (7 - n) > 0 {
+                motor_data.set_high();
+            } else {
+                motor_data.set_low();
+            }
+
+            motor_clk.set_high();
+        }
+
+        motor_latch.set_high();
+        motor_enable.set_low();
+        // reset end
+
+        arduino_hal::delay_ms(5000);
     }
 }
