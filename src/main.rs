@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-use arduino_hal::{port::{Pin, mode::Output}, hal::port::{PB4, PD7, PD4, PB0}};
+use arduino_hal::{port::{Pin, mode::Output}, hal::{port::{PB4, PD7, PD4, PB0}}, Pins};
 use panic_halt as _;
 
 enum Instruction {
@@ -24,18 +24,12 @@ struct MotorManager {
 }
 
 impl MotorManager {
-    fn new() -> Self {
-        let dp = arduino_hal::Peripherals::take().unwrap();
-        let pins = arduino_hal::pins!(dp);
-    
-        let mut serial = arduino_hal::default_serial!(dp, pins, 57600);
-        ufmt::uwriteln!(&mut serial, "Running...\r").unwrap();
-    
-        let motor_latch = pins.d12.into_output();
-        let motor_data = pins.d8.into_output();
-        let motor_enable = pins.d7.into_output();
-        let motor_clk = pins.d4.into_output();
-
+    fn new(
+        motor_latch: Pin<Output, PB4>,
+        motor_data: Pin<Output, PB0>,
+        motor_enable: Pin<Output, PD7>,
+        motor_clk: Pin<Output, PD4>
+    ) -> Self {    
         return MotorManager {
             motor_data,
             motor_enable,
@@ -110,18 +104,59 @@ impl MotorManager {
 
 #[arduino_hal::entry]
 fn main() -> ! {
-    let mut motor_manager = MotorManager::new();
+    let dp = arduino_hal::Peripherals::take().unwrap();
+    let pins = arduino_hal::pins!(dp);
+
+    let mut adc = arduino_hal::Adc::new(dp.ADC, Default::default());
+    let mut serial = arduino_hal::default_serial!(dp, pins, 57600);
+
+    let motor_latch = pins.d12.into_output();
+    let motor_data = pins.d8.into_output();
+    let motor_enable = pins.d7.into_output();
+    let motor_clk = pins.d4.into_output();
+
+    let mut motor_manager = MotorManager::new(motor_latch, motor_data, motor_enable, motor_clk);
+    motor_manager.reset();
+    
+    let pin_ir_a1 = pins.a0.into_analog_input(&mut adc);
+    let pin_ir_a2 = pins.a1.into_analog_input(&mut adc);
+    let pin_ir_a3 = pins.a2.into_analog_input(&mut adc);
+    let pin_ir_a4 = pins.a3.into_analog_input(&mut adc);
+    let pin_ir_a5 = pins.a4.into_analog_input(&mut adc);
+
+    let mut ir_value_a1 = 0;
+    let mut ir_value_a2 = 0;
+    let mut ir_value_a3 = 0;
+    let mut ir_value_a4 = 0;
+    let mut ir_value_a5 = 0;
 
     loop {
-        motor_manager.run(Instruction::Forward, 1);
-        motor_manager.run(Instruction::Forward, 2);
-        arduino_hal::delay_ms(5000);
-        motor_manager.run(Instruction::Backward, 1);
-        motor_manager.run(Instruction::Backward, 2);
-        arduino_hal::delay_ms(5000);
-        motor_manager.run(Instruction::Release, 1);
-        motor_manager.run(Instruction::Release, 2);
-        arduino_hal::delay_ms(5000);
+        ufmt::uwriteln!(&mut serial, "Analog Reading = [").unwrap();
+        ufmt::uwriteln!(&mut serial, "{}\t", ir_value_a1).unwrap();
+        ufmt::uwriteln!(&mut serial, "{}\t", ir_value_a2).unwrap();
+        ufmt::uwriteln!(&mut serial, "{}\t", ir_value_a3).unwrap();
+        ufmt::uwriteln!(&mut serial, "{}\t", ir_value_a4).unwrap();
+        ufmt::uwriteln!(&mut serial, "{}\t", ir_value_a5).unwrap();
+        ufmt::uwriteln!(&mut serial, "]").unwrap();
+
+        if ir_value_a3 < 500 {
+            motor_manager.run(Instruction::Forward, 1);
+            motor_manager.run(Instruction::Forward, 2);
+        } else if ir_value_a2 < 500 && ir_value_a4 > 500 {
+            motor_manager.run(Instruction::Release, 1);
+            motor_manager.run(Instruction::Forward, 2);
+        } else if ir_value_a2 > 300 && ir_value_a4 < 300 {
+            motor_manager.run(Instruction::Release, 2);
+            motor_manager.run(Instruction::Forward, 1);
+        } else {
+            motor_manager.run(Instruction::Release, 2);
+            motor_manager.run(Instruction::Release, 1); 
+        }
+
+        ir_value_a1 = pin_ir_a1.analog_read(&mut adc);
+        ir_value_a2 = pin_ir_a2.analog_read(&mut adc);
+        ir_value_a3 = pin_ir_a3.analog_read(&mut adc);
+        ir_value_a4 = pin_ir_a4.analog_read(&mut adc);
+        ir_value_a5 = pin_ir_a5.analog_read(&mut adc);
     }
 }
-
