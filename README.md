@@ -2,14 +2,14 @@
 ==================
 
 ## Usage
-Install `avrdude`. The steps for that will depend on your OS.
+First, Install `avrdude`. The steps for that will depend on your OS.
 
 Then clone this repo:
 ```
 git clone git@github.com:axiomatic-aardvark/line_follower_rust.git
 ```
 
-Everything is prepared so you should be able to just
+Everything is prepared so you should be able to just run the project:
 
 ```bash
 cargo run
