@@ -1,43 +1,57 @@
-#![no_std]
-#![no_main]
-
+use arduino_hal::{port::{Pin, mode::{Output, Analog, Input}}, hal::port::{PC0, PC1, PC2, PC3, PC4, PD0, PD1}, Adc, Usart, pac::USART0};
 use panic_halt as _;
 
-#[arduino_hal::entry]
-fn main() -> ! {
-    let dp = arduino_hal::Peripherals::take().unwrap();
-    let pins = arduino_hal::pins!(dp);
+pub(crate) struct Sensors {
+    adc: Adc,
+    ir1: Pin<Analog, PC0>,
+    ir2: Pin<Analog, PC1>,
+    ir3: Pin<Analog, PC2>,
+    ir4:  Pin<Analog, PC3>,
+    ir5: Pin<Analog, PC4>,
+    pub(crate) ir1_value: u16,
+    pub(crate) ir2_value: u16,
+    pub(crate) ir3_value: u16,
+    pub(crate) ir4_value: u16,
+    pub(crate) ir5_value: u16,
+}
 
-    let mut adc = arduino_hal::Adc::new(dp.ADC, Default::default());
-    let mut serial = arduino_hal::default_serial!(dp, pins, 57600);
-    
-    let pin_ir_a1 = pins.a0.into_analog_input(&mut adc);
-    let pin_ir_a2 = pins.a1.into_analog_input(&mut adc);
-    let pin_ir_a3 = pins.a2.into_analog_input(&mut adc);
-    let pin_ir_a4 = pins.a3.into_analog_input(&mut adc);
-    let pin_ir_a5 = pins.a4.into_analog_input(&mut adc);
+impl Sensors {
+    pub(crate) fn new(
+        adc: Adc,
+        ir1: Pin<Analog, PC0>,
+        ir2: Pin<Analog, PC1>,
+        ir3: Pin<Analog, PC2>,
+        ir4: Pin<Analog, PC3>,
+        ir5: Pin<Analog, PC4>,
+    ) -> Self {    
+        return Sensors {
+            adc,
+            ir1,
+            ir2,
+            ir3,
+            ir4,
+            ir5,
+            ir1_value: 0,
+            ir2_value: 0,
+            ir3_value: 0,
+            ir4_value: 0,
+            ir5_value: 0,
+        }
+    }
 
-    let mut ir_value_a1 = 0;
-    let mut ir_value_a2 = 0;
-    let mut ir_value_a3 = 0;
-    let mut ir_value_a4 = 0;
-    let mut ir_value_a5 = 0;
+    pub(crate) fn read_values(&mut self, mut serial: &mut Usart<USART0, Pin<Input, PD0>, Pin<Output, PD1>>) {
+        self.ir1_value = self.ir1.analog_read(&mut self.adc);
+        self.ir2_value = self.ir2.analog_read(&mut self.adc);
+        self.ir3_value = self.ir3.analog_read(&mut self.adc);
+        self.ir4_value = self.ir4.analog_read(&mut self.adc);
+        self.ir5_value = self.ir5.analog_read(&mut self.adc);
 
-    loop {
         ufmt::uwriteln!(&mut serial, "Analog Reading = [").unwrap();
-        ufmt::uwriteln!(&mut serial, "{}\t", ir_value_a1).unwrap();
-        ufmt::uwriteln!(&mut serial, "{}\t", ir_value_a2).unwrap();
-        ufmt::uwriteln!(&mut serial, "{}\t", ir_value_a3).unwrap();
-        ufmt::uwriteln!(&mut serial, "{}\t", ir_value_a4).unwrap();
-        ufmt::uwriteln!(&mut serial, "{}\t", ir_value_a5).unwrap();
+        ufmt::uwriteln!(&mut serial, "{}\t", self.ir1_value).unwrap();
+        ufmt::uwriteln!(&mut serial, "{}\t", self.ir2_value).unwrap();
+        ufmt::uwriteln!(&mut serial, "{}\t", self.ir3_value).unwrap();
+        ufmt::uwriteln!(&mut serial, "{}\t", self.ir4_value).unwrap();
+        ufmt::uwriteln!(&mut serial, "{}\t", self.ir5_value).unwrap();
         ufmt::uwriteln!(&mut serial, "]").unwrap();
-
-        arduino_hal::delay_ms(1000);
-
-        ir_value_a1 = pin_ir_a1.analog_read(&mut adc);
-        ir_value_a2 = pin_ir_a2.analog_read(&mut adc);
-        ir_value_a3 = pin_ir_a3.analog_read(&mut adc);
-        ir_value_a4 = pin_ir_a4.analog_read(&mut adc);
-        ir_value_a5 = pin_ir_a5.analog_read(&mut adc);
     }
 }
