@@ -8,7 +8,7 @@ First, Install `avrdude`. The steps for that will depend on your OS.
 
 Then clone this repo:
 ```
-git clone git@github.com:axiomatic-aardvark/line_follower_rust.git
+git clone git@github.com:axiomatic-aardvark/rusty-line-follower.git
 ```
 
 Everything is prepared so you should be able to just run the project:
