@@ -139,15 +139,21 @@ fn main() -> ! {
         ufmt::uwriteln!(&mut serial, "{}\t", ir_value_a5).unwrap();
         ufmt::uwriteln!(&mut serial, "]").unwrap();
 
-        if ir_value_a1 > 800 && ir_value_a5 > 800 {
+        if ir_value_a2 > 500 && ir_value_a4 > 500 {
             motor_manager.run(Instruction::Forward, 2);
             motor_manager.run(Instruction::Forward, 1);
-        } else if ir_value_a1 < 800 && ir_value_a5 > 800 {
+        } else if ir_value_a2 < 500 && ir_value_a4 > 500 {
             motor_manager.run(Instruction::Release, 2);
             motor_manager.run(Instruction::Forward, 1);
-        } else if ir_value_a1 > 800 && ir_value_a5 < 800 {
+        } else if ir_value_a2 > 500 && ir_value_a4 < 500 {
             motor_manager.run(Instruction::Release, 1);
             motor_manager.run(Instruction::Forward, 2);
+        } else if ir_value_a1 < 500 && ir_value_a5 > 500 {
+            motor_manager.run(Instruction::Release, 1);
+            motor_manager.run(Instruction::Forward, 2);
+        } else if ir_value_a1 > 500 && ir_value_a5 < 500 {
+            motor_manager.run(Instruction::Release, 2);
+            motor_manager.run(Instruction::Forward, 1);
         } else {
             motor_manager.run(Instruction::Release, 2);
             motor_manager.run(Instruction::Release, 1); 
