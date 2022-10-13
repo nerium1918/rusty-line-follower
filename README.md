@@ -2,7 +2,7 @@
 ==================
 
 ## Usage
-Install [`avrdude`]. The steps will depend on your OS.
+Install `avrdude`. The steps for that will depend on your OS.
 
 Then clone this repo:
 ```
