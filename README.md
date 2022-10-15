@@ -1,4 +1,4 @@
-`Rusty Line Follower 🦀`
+Rusty Line Follower 🦀
 ==================
 
 Line follower robot built with Rust, utilising the [avr-hal](https://github.com/Rahix/avr-hal-template) project. For now it only supports the Arduino Uno board, but the code can easily be adapted for other boards with the help of the [avr-hal examples](https://github.com/Rahix/avr-hal/tree/main/examples).
