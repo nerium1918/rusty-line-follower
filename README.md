@@ -1,18 +1,25 @@
 Rusty Line Follower 🦀
-==================
+======================
 
 Line follower robot built with Rust, utilising the [avr-hal](https://github.com/Rahix/avr-hal-template) project. For now it only supports the Arduino Uno board, but the code can easily be adapted for other boards with the help of the [avr-hal examples](https://github.com/Rahix/avr-hal/tree/main/examples).
 
-## Usage
-First, Install `avrdude`. The steps for that will depend on your OS.
+## Prerequisites
+You need to have the following installed on your system:
+### Rust
+Install the Rust compiler, this this curl command:
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+### Avrdude
+The installation process for `avrdude` will depend on your OS.
 
-Then clone this repo:
+## Usage
+Clone this repo:
 ```
 git clone git@github.com:axiomatic-aardvark/rusty-line-follower.git
 ```
 
-Everything is prepared so you should be able to just run the project:
-
+And just run the project:
 ```bash
 cargo run
 ```
