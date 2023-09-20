@@ -16,8 +16,8 @@ The installation process for `avrdude` will depend on your OS.
 #### Windows
 You can download `avr-gcc`, which includes `avrdude`.
 You can use the following [guide](https://tinusaur.com/guides/avr-gcc-toolchain/).
-After downloading the archive extract it to `C:\Users\Username\Programs\avr8-gnu-toolchain`
-Create an ```code AVRGCCStart.cmd``` file with those contents:
+After downloading the archive extract it to `C:\Users\Username\Programs\avr8-gnu-toolchain`.
+Then, create a ```code AVRGCCStart.cmd``` file with those contents:
 ```code
 set Path=%Path%;C:\Users\Username\Programs\avr8-gnu-toolchain\bin
 set Path=%Path%;C:\Users\Username\Programs\avr8-gnu-toolchain\avr\bin
