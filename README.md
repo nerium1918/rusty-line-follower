@@ -12,10 +12,11 @@ On Windows use [rustup](https://rustup.rs/).
 
 ### Avrdude
 The installation process for `avrdude` will depend on your OS.
+
 #### Windows
 You can download `avr-gcc`, which includes `avrdude`.
 You can use the following [guide](https://tinusaur.com/guides/avr-gcc-toolchain/).
-After downloading the archive extract it to C:\Users\Username\Programs\avr8-gnu-toolchain
+After downloading the archive extract it to `C:\Users\Username\Programs\avr8-gnu-toolchain`
 Create an ```code AVRGCCStart.cmd``` file with those contents:
 ```code
 set Path=%Path%;C:\Users\Username\Programs\avr8-gnu-toolchain\bin
@@ -23,7 +24,8 @@ set Path=%Path%;C:\Users\Username\Programs\avr8-gnu-toolchain\avr\bin
 
 start cmd
 ```
-After that save it, and then execute the script.From there you can change to where you've cloned the repository and follow the steps after.
+After that save it, and then execute the script. From there you can change to where you've cloned the repository and follow the steps after.
+
 #### MacOS
 `avrdude` is packaged in a homebrew formula and can be installed with
 ```
