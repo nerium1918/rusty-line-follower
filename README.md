@@ -8,7 +8,7 @@ Install the Rust compiler, this this curl command:
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
-On Windows use [rustup](https://rustup.rs/).
+On Windows use [rustup-init.exe](https://rustup.rs/).
 
 ### Avrdude
 The installation process for `avrdude` will depend on your OS.
