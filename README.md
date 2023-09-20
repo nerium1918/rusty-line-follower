@@ -8,10 +8,13 @@ Install the Rust compiler, this this curl command:
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
+On Windows use [rustup](https://rustup.rs/).
 ### Avrdude
 The installation process for `avrdude` will depend on your OS.
 #### Windows
 You can download `avr-gcc`, which includes `avrdude`.
+You can use the following [guide](https://tinusaur.com/guides/avr-gcc-toolchain/).
+
 #### MacOS
 `avrdude` is packaged in a homebrew formula and can be installed with
 ```
