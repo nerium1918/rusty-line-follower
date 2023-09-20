@@ -18,8 +18,8 @@ You can use the following [guide](https://tinusaur.com/guides/avr-gcc-toolchain/
 After downloading the archive extract it to C:\Users\Username\Programs\avr8-gnu-toolchain
 Create an ```code AVRGCCStart.cmd``` file with those contents:
 ```code
-set Path=%Path%;C:\Users\Daniel\Programs\avr8-gnu-toolchain\bin
-set Path=%Path%;C:\Users\Daniel\Programs\avr8-gnu-toolchain\avr\bin
+set Path=%Path%;C:\Users\Username\Programs\avr8-gnu-toolchain\bin
+set Path=%Path%;C:\Users\Username\Programs\avr8-gnu-toolchain\avr\bin
 
 start cmd
 ```
